@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Record Security Incident | CyberShield{% endblock %}
+
+{% block content %}
+
+<!-- Subpage Dark Header Hero -->
+<section class="cs-subpage-header">
+    <div class="cs-content-container py-0">
+        <a href="{{ url_for('dashboard') }}" class="cs-link-arrow small mb-2 d-inline-flex" style="color: #94A3B8;">
+            &larr; Back to Dashboard
+        </a>
+        <h1 class="page-title mb-1">Record Security Incident</h1>
+        <p>
+            Enter telemetry, attack classification, and initial triage indicators. Incident will automatically enter <span style="color: #F87171; font-weight: 600;">OPEN</span> status.
+        </p>
+    </div>
+</section>
+
+<div class="cs-content-container pt-0">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 col-xl-7">
+
+            <div class="cs-card p-4 p-md-5">
+                <form method="POST" action="{{ url_for('add_incident') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="cs-form-group">
+                        <label for="title" class="cs-label">Incident Title <span class="cs-required">*</span></label>
+                        <input type="text" id="title" name="title" class="cs-input"
+                               placeholder="e.g. Unauthorized credential brute-force against identity provider"
+                               maxlength="200" required autofocus>
+                        <div class="cs-form-help">Concise summary of detection or security alert (max 200 chars).</div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <label for="attack_type_id" class="cs-label">Attack Vector <span class="cs-required">*</span></label>
+                            <select id="attack_type_id" name="attack_type_id" class="cs-select" required>
+                                <option value="">Select Attack Type...</option>
+                                {% for at in attack_types %}
+                                    <option value="{{ at.attack_type_id }}">
+                                        {{ at.type_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="severity" class="cs-label">Severity Tier <span class="cs-required">*</span></label>
+                            <select id="severity" name="severity" class="cs-select" required>
+                                <option value="LOW">LOW &mdash; Routine anomaly / non-disruptive</option>
+                                <option value="MEDIUM" selected>MEDIUM &mdash; Needs operational review</option>
+                                <option value="HIGH">HIGH &mdash; Urgent business service impact</option>
+                                <option value="CRITICAL">CRITICAL &mdash; Active breach or privilege loss</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="cs-form-group">
+                        <label for="description" class="cs-label">Detailed Incident Synopsis</label>
+                        <textarea id="description" name="description" class="cs-textarea" rows="5"
+                                  placeholder="Describe telemetry indicators, targeted accounts, logs, payload signatures, or initial observations..."
+                                  maxlength="5000"></textarea>
+                    </div>
+
+                    <div class="pt-3 border-top border-light-subtle mb-4">
+                        <h4 class="cs-label" style="color: var(--cs-text-tertiary); margin-bottom: 1rem;">Initial Linkages (Optional)</h4>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label for="analyst_id" class="cs-label">Lead Analyst</label>
+                                <select id="analyst_id" name="analyst_id" class="cs-select">
+                                    <option value="">Unassigned (Queue for Triage)</option>
+                                    {% for a in analysts %}
+                                        <option value="{{ a.analyst_id }}">
+                                            {{ a.full_name }} ({{ a.role }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="device_id" class="cs-label">Impacted Endpoint</label>
+                                <select id="device_id" name="device_id" class="cs-select">
+                                    <option value="">None / Pending Investigation</option>
+                                    {% for d in devices %}
+                                        <option value="{{ d.device_id }}">
+                                            {{ d.hostname }} ({{ d.device_type }} &middot; {{ d.department }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 pt-2">
+                        <button type="submit" class="cs-btn-primary">
+                            Save Incident
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="cs-btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

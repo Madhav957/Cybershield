@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied (403 Forbidden) | CyberShield{% endblock %}
+
+{% block content %}
+<div class="cs-content-container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 text-center">
+            
+            <div class="cs-card p-5">
+                <div class="mb-3">
+                    <span class="cs-badge cs-badge-critical" style="font-size: 0.75rem;">
+                        <span class="cs-badge-dot"></span> 403 FORBIDDEN
+                    </span>
+                </div>
+
+                <h1 class="page-title mb-2">Access Denied</h1>
+                
+                <p class="cs-section-subtitle mb-4">
+                    Your current role 
+                    {% if current_user and current_user.is_authenticated %}
+                        <strong style="color: var(--cs-accent);">({{ current_user.role }})</strong>
+                    {% endif %}
+                    does not have sufficient authorization to access this security resource or execute this administrative action.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('dashboard') }}" class="cs-btn-primary">
+                        Return to Dashboard
+                    </a>
+                    {% if current_user and current_user.is_authenticated %}
+                        <form method="POST" action="{{ url_for('logout') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="cs-btn-secondary">
+                                Switch Account
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="cs-btn-secondary">
+                            Sign In
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

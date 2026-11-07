@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Incident Status Audit Trail | CyberShield{% endblock %}
+
+{% block content %}
+
+<!-- Subpage Dark Header Hero -->
+<section class="cs-subpage-header">
+    <div class="cs-content-container py-0">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div>
+                <h1 class="page-title mb-1">Incident Status Audit Trail</h1>
+                <p>
+                    Immutable chronological ledger of all incident state transitions recorded by MySQL database triggers.
+                </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('dashboard') }}" class="cs-btn-secondary cs-btn-sm">
+                    &larr; Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="cs-content-container pt-0">
+
+    <!-- Search & Filter Card -->
+    <div class="cs-card mb-4">
+        <div class="cs-card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="cs-card-title">Search Status History</h3>
+                <p class="cs-card-subtitle">Trace chronological transitions by actor, incident title, or workflow phase</p>
+            </div>
+            <span class="cs-badge cs-badge-neutral">
+                {{ total_history }} Total Recorded Events
+            </span>
+        </div>
+
+        <form method="GET" action="{{ url_for('audit_history') }}">
+            <div class="row g-3">
+                <div class="col-12 col-md-7">
+                    <label for="q" class="cs-label">Incident ID, Title, or Actor</label>
+                    <input type="search" id="q" name="q" class="cs-input"
+                           placeholder="e.g. Repeated login, Console, or #1"
+                           value="{{ q }}" maxlength="100">
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label for="status_filter" class="cs-label">Status Involved</label>
+                    <select id="status_filter" name="status_filter" class="cs-select">
+                        <option value="">All Statuses</option>
+                        {% for st in valid_statuses %}
+                            <option value="{{ st }}" {% if status_filter == st %}selected{% endif %}>
+                                {{ st }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="cs-btn-primary w-100">
+                        Filter
+                    </button>
+                    <a href="{{ url_for('audit_history') }}" class="cs-btn-secondary">
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Audit Log Table -->
+    <div class="cs-card cs-card-flush">
+        <div class="cs-card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="cs-card-title">Transition Events (Showing {{ history|length }})</h3>
+                <p class="cs-card-subtitle">Ordered with newest security events first</p>
+            </div>
+            <span class="small fw-semibold" style="color: var(--cs-accent);">Trigger Enforced</span>
+        </div>
+
+        <div class="cs-table-wrapper">
+            <table class="cs-table">
+                <thead>
+                    <tr>
+                        <th>History ID</th>
+                        <th>Incident</th>
+                        <th>State Transition</th>
+                        <th>Timestamp (UTC)</th>
+                        <th>Actor / Authority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                        <tr>
+                            <td class="cs-mono fw-semibold text-secondary">#{{ entry.history_id }}</td>
+                            <td>
+                                <a href="{{ url_for('incident_detail', incident_id=entry.incident_id) }}" class="cs-title-cell">
+                                    #{{ entry.incident_id }} &mdash; {{ entry.incident_title }}
+                                </a>
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <span class="cs-badge cs-badge-{{ entry.old_status|lower }}" style="font-size: 0.65rem; padding: 2px 7px;">
+                                    {{ entry.old_status }}
+                                </span>
+                                <span class="mx-1" style="color: var(--cs-text-quaternary);">&rarr;</span>
+                                <span class="cs-badge cs-badge-{{ entry.new_status|lower }}" style="font-size: 0.65rem; padding: 2px 7px;">
+                                    {{ entry.new_status }}
+                                </span>
+                            </td>
+                            <td class="cs-mono small" style="white-space: nowrap;">
+                                {{ entry.changed_at.strftime('%d %b %Y, %H:%M:%S') if entry.changed_at else '—' }}
+                            </td>
+                            <td>
+                                <span class="fw-semibold" style="color: var(--cs-text-primary);">{{ entry.changed_by }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('incident_detail', incident_id=entry.incident_id) }}" class="cs-link-arrow small">
+                                    View Incident &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="cs-empty">
+                                    <div class="cs-empty-icon">&empty;</div>
+                                    <h4 class="cs-empty-title">No Audit Events Found</h4>
+                                    <p class="cs-empty-subtitle">No state transitions matched your query criteria.</p>
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('audit_history') }}" class="cs-btn-secondary cs-btn-sm">
+                                            Clear Filters
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

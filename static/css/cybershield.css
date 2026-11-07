@@ -1,0 +1,1686 @@
+/* ==========================================================================
+   CYBERSHIELD — DESIGN SYSTEM
+   Cybersecurity Incident Intelligence Platform
+   Source of Truth: Approved Figma Specification
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* --------------------------------------------------------------------------
+     Canvas & Surface Palette (Figma Hybrid Specification)
+     - Dark Navy / Vibrant Blue Hero & Navigation
+     - Pure White & Soft Slate Content Canvas
+     -------------------------------------------------------------------------- */
+  --cs-bg-canvas: #F8FAFC;
+  --cs-bg-surface: #FFFFFF;
+  --cs-bg-subtle: #F1F5F9;
+  --cs-bg-elevated: #FFFFFF;
+  --cs-bg-input: #FFFFFF;
+
+  /* Hero & Navigation Dark Tokens */
+  --cs-nav-bg: #030712;
+  --cs-hero-top: #020617;
+  --cs-hero-mid: #0E2554;
+  --cs-hero-cobalt: #1D4ED8;
+  --cs-hero-bright: #2563EB;
+
+  /* Typography Colors */
+  --cs-text-primary: #0F172A;       /* Slate 900 */
+  --cs-text-secondary: #334155;     /* Slate 700 */
+  --cs-text-tertiary: #64748B;      /* Slate 500 */
+  --cs-text-quaternary: #94A3B8;    /* Slate 400 */
+  --cs-text-inverse: #FFFFFF;
+  --cs-text-inverse-muted: #CBD5E1;
+
+  /* Brand Accents */
+  --cs-accent: #2563EB;            /* Blue 600 */
+  --cs-accent-hover: #1D4ED8;      /* Blue 700 */
+  --cs-accent-subtle: #EFF6FF;     /* Blue 50 */
+  --cs-accent-border: #BFDBFE;
+
+  /* Borders & Dividers */
+  --cs-border: #E2E8F0;             /* Slate 200 */
+  --cs-border-subtle: #F1F5F9;      /* Slate 100 */
+  --cs-border-hover: #CBD5E1;       /* Slate 300 */
+  --cs-border-dark: rgba(255, 255, 255, 0.12);
+  --cs-border-focus: #2563EB;
+
+  /* Restrained Severity System (Human-Crafted, Non-Neon) */
+  --cs-critical: #DC2626;          /* Red 600 */
+  --cs-critical-bg: #FEF2F2;
+  --cs-critical-border: #FECACA;
+  --cs-critical-text: #991B1B;
+
+  --cs-high: #D97706;              /* Amber 600 */
+  --cs-high-bg: #FFFBEB;
+  --cs-high-border: #FDE68A;
+  --cs-high-text: #92400E;
+
+  --cs-medium: #4F46E5;            /* Indigo 600 */
+  --cs-medium-bg: #EEF2FF;
+  --cs-medium-border: #C7D2FE;
+  --cs-medium-text: #3730A3;
+
+  --cs-low: #059669;               /* Emerald 600 */
+  --cs-low-bg: #ECFDF5;
+  --cs-low-border: #A7F3D0;
+  --cs-low-text: #065F46;
+
+  /* Status Colors */
+  --cs-status-open: #DC2626;
+  --cs-status-investigating: #2563EB;
+  --cs-status-contained: #D97706;
+  --cs-status-resolved: #059669;
+  --cs-status-closed: #64748B;
+
+  /* Border Radii */
+  --cs-radius-xs: 4px;
+  --cs-radius-sm: 6px;
+  --cs-radius-md: 10px;
+  --cs-radius-lg: 16px;
+  --cs-radius-xl: 20px;
+  --cs-radius-pill: 9999px;
+
+  /* Handcrafted Elevation & Box Shadows */
+  --cs-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --cs-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --cs-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --cs-shadow-card: 0 20px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+
+  /* Typography Stack */
+  --cs-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cs-font-mono: 'JetBrains Mono', "SF Mono", Menlo, Consolas, monospace;
+
+  /* Transitions */
+  --cs-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --cs-transition: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   BASE RESETS & DEFAULTS
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--cs-bg-canvas);
+  color: var(--cs-text-secondary);
+  font-family: var(--cs-font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.2);
+  color: #0F172A;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--cs-text-primary);
+  font-family: var(--cs-font-sans);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-top: 0;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--cs-accent);
+  text-decoration: none;
+  transition: color var(--cs-transition);
+}
+a:hover {
+  color: var(--cs-accent-hover);
+}
+
+.cs-mono, code, pre {
+  font-family: var(--cs-font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   NAVIGATION BAR — Figma ":: Securio" Header
+   ========================================================================== */
+
+.cs-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 64px;
+  background: rgba(3, 7, 18, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cs-nav-inner {
+  max-width: 1240px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Brand Mark: ":: Securio" with CyberShield */
+.cs-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.cs-nav-brand:hover {
+  color: #FFFFFF;
+}
+
+.cs-brand-mark {
+  display: grid;
+  grid-template-columns: repeat(2, 4px);
+  grid-gap: 3px;
+  padding-top: 1px;
+}
+.cs-brand-mark span {
+  width: 4px;
+  height: 4px;
+  background-color: #60A5FA;
+  border-radius: 50%;
+  display: block;
+}
+.cs-brand-mark span:nth-child(2),
+.cs-brand-mark span:nth-child(4),
+.cs-brand-mark span:nth-child(6) {
+  background-color: #38BDF8;
+}
+
+.cs-brand-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--cs-radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  color: #93C5FD;
+  letter-spacing: 0.02em;
+  margin-left: 0.35rem;
+}
+
+/* Center Nav Links */
+.cs-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cs-nav-link {
+  color: #94A3B8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--cs-radius-sm);
+  text-decoration: none;
+  transition: color var(--cs-transition), background-color var(--cs-transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cs-nav-link:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+.cs-nav-link.active {
+  color: #FFFFFF;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cs-nav-caret {
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+/* Dropdown styling */
+.cs-nav-dropdown {
+  position: relative;
+}
+.cs-nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  background: #0B1329;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--cs-radius-md);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  min-width: 200px;
+  z-index: 1050;
+}
+.cs-nav-dropdown:hover .cs-nav-dropdown-menu,
+.cs-nav-dropdown:focus-within .cs-nav-dropdown-menu {
+  display: block;
+}
+.cs-nav-dropdown-item {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #CBD5E1;
+  text-decoration: none;
+  border-radius: var(--cs-radius-sm);
+  transition: all var(--cs-transition);
+}
+.cs-nav-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+/* Nav Actions */
+.cs-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.cs-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4ADE80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--cs-radius-pill);
+}
+.cs-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ADE80;
+  box-shadow: 0 0 6px #4ADE80;
+}
+
+.cs-nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--cs-radius-sm);
+  color: #FFFFFF;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   BUTTON ARCHITECTURE (HUMAN CRAFT — NO AI ARTIFACTS)
+   ========================================================================== */
+
+/* 1. Nav & Hero Crisp White Pill Button (Source: Figma "Book a Demo" in Navbar) */
+.cs-btn-pill-white {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1.45rem;
+  border-radius: var(--cs-radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.cs-btn-pill-white:hover {
+  background: #F1F5F9 !important;
+  color: #020617 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+.cs-btn-pill-white:active {
+  transform: translateY(0);
+}
+
+/* 2. Hero Dark Pill Button (Source: Figma "Book a Demo" in Hero section) */
+.cs-btn-pill-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: #090D16 !important;
+  color: #FFFFFF !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.7rem 1.85rem;
+  border-radius: var(--cs-radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+  line-height: 1.25;
+}
+.cs-btn-pill-dark:hover {
+  background: #111827 !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.cs-btn-pill-dark:active {
+  transform: translateY(0);
+}
+
+/* 3. Core Operational Primary Button (Clean, Ergonomic 8px Rectangular) */
+.cs-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--cs-radius-sm);
+  border: 1px solid #0F172A;
+  box-shadow: var(--cs-shadow-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+  line-height: 1.25;
+}
+.cs-btn-primary:hover {
+  background: #1E293B !important;
+  border-color: #1E293B;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+  box-shadow: var(--cs-shadow-md);
+}
+.cs-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* 4. Secondary Neutral Button (Clean white surface with slate border) */
+.cs-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--cs-radius-sm);
+  border: 1px solid var(--cs-border);
+  box-shadow: var(--cs-shadow-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+  line-height: 1.25;
+}
+.cs-btn-secondary:hover {
+  background: #F8FAFC !important;
+  border-color: var(--cs-border-hover);
+  color: #0F172A !important;
+}
+
+/* 5. Brand Cobalt Button */
+.cs-btn-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--cs-radius-sm);
+  border: 1px solid #2563EB;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+}
+.cs-btn-brand:hover {
+  background: #1D4ED8 !important;
+  border-color: #1D4ED8;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 6. Ghost Action Button */
+.cs-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: transparent !important;
+  color: #475569 !important;
+  font-family: var(--cs-font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--cs-radius-sm);
+  border: 1px solid var(--cs-border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+}
+.cs-btn-ghost:hover {
+  color: #0F172A !important;
+  border-color: var(--cs-border-hover);
+  background: #F1F5F9 !important;
+}
+
+/* 7. Small Variant for Tables & Form Bars */
+.cs-btn-sm {
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--cs-radius-xs);
+}
+
+/* 8. Text Arrow Link */
+.cs-link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--cs-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--cs-transition);
+}
+.cs-link-arrow:hover {
+  color: var(--cs-accent-hover);
+  transform: translateX(2px);
+}
+
+/* ==========================================================================
+   HERO PRESENTATION (EXACT FIGMA SPECIFICATION)
+   ========================================================================== */
+
+.cs-hero-wrapper {
+  position: relative;
+  width: 100%;
+  background:
+    radial-gradient(circle at 80% 38%, rgba(37, 99, 235, 0.45) 0%, rgba(29, 78, 216, 0.2) 35%, transparent 65%),
+    radial-gradient(circle at 20% 20%, rgba(30, 58, 138, 0.4) 0%, transparent 55%),
+    linear-gradient(180deg, #020617 0%, #06112C 30%, #0D2866 55%, #1D4ED8 72%, #60A5FA 88%, #EFF6FF 96%, #FFFFFF 100%);
+  padding: 4.5rem 0 5.5rem;
+  overflow: hidden;
+}
+
+/* Constellation / Starlight Dot Mesh on the right side */
+.cs-hero-dots-pattern {
+  position: absolute;
+  top: 10%;
+  right: 0;
+  width: 52%;
+  height: 80%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+  mask-image: radial-gradient(circle at 70% 35%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle at 70% 35%, black 20%, transparent 75%);
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.cs-hero-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* "Trusted by 300+ businesses" Badge */
+.cs-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--cs-radius-pill);
+  padding: 0.3rem 0.95rem 0.3rem 0.35rem;
+  margin-bottom: 2rem;
+  color: #E2E8F0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+
+.cs-hero-avatars {
+  display: flex;
+  align-items: center;
+}
+.cs-hero-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #06112C;
+  margin-right: -7px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Hero Typography */
+.cs-hero-title {
+  font-size: clamp(2.5rem, 5.2vw, 3.85rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  color: #FFFFFF;
+  margin-bottom: 1.25rem;
+  max-width: 780px;
+}
+
+.cs-hero-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.45;
+  color: #CBD5E1;
+  max-width: 620px;
+  margin-bottom: 2.25rem;
+  font-weight: 400;
+}
+
+.cs-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.cs-hero-link {
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--cs-transition);
+}
+.cs-hero-link:hover {
+  color: #FFFFFF;
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   PARTNER LOGOS RIBBON (EXACT FIGMA REPRODUCTION)
+   ========================================================================== */
+
+.cs-logos-ribbon {
+  background: #FFFFFF;
+  padding: 3rem 0;
+  border-bottom: 1px solid var(--cs-border-subtle);
+}
+
+.cs-logos-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.cs-logo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #334155;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  opacity: 0.85;
+  transition: opacity var(--cs-transition);
+}
+.cs-logo-item:hover {
+  opacity: 1;
+}
+
+.cs-logo-svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* ==========================================================================
+   SOLUTIONS SECTION (3 FEATURE CARDS — EXACT FIGMA REPRODUCTION)
+   ========================================================================== */
+
+.cs-solutions-section {
+  background: #FFFFFF;
+  padding: 5rem 0 6rem;
+}
+
+.cs-solutions-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.cs-solutions-header {
+  margin-bottom: 3.5rem;
+}
+
+.cs-solutions-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748B;
+  margin-bottom: 0.75rem;
+}
+
+.cs-solutions-title {
+  font-size: clamp(2.2rem, 3.8vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  color: #0F172A;
+  margin: 0;
+}
+
+.cs-solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* The Solution Card Item */
+.cs-solution-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Visual Canvas Container with Blue Gradients */
+.cs-card-visual {
+  border-radius: var(--cs-radius-xl);
+  padding: 2.25rem 1.75rem;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  transition: transform var(--cs-transition), box-shadow var(--cs-transition);
+}
+.cs-solution-card:hover .cs-card-visual {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 35px -5px rgba(37, 99, 235, 0.15);
+}
+
+/* Gradient Variants */
+.cs-card-visual-1 {
+  background: linear-gradient(180deg, #93C5FD 0%, #3B82F6 100%);
+}
+.cs-card-visual-2 {
+  background: linear-gradient(180deg, #60A5FA 0%, #1D4ED8 100%);
+}
+.cs-card-visual-3 {
+  background: linear-gradient(180deg, #2563EB 0%, #030712 100%);
+}
+
+/* Floating White Inner Card */
+.cs-floating-card {
+  background: #FFFFFF;
+  border-radius: var(--cs-radius-lg);
+  box-shadow: 0 20px 30px -8px rgba(0, 0, 0, 0.16), 0 8px 10px -4px rgba(0, 0, 0, 0.06);
+  padding: 1.35rem 1.5rem;
+  width: 100%;
+  max-width: 275px;
+  font-size: 0.8125rem;
+}
+
+/* Card 1: Security Incident Workflow */
+.cs-flow-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-weight: 500;
+  color: #1E293B;
+  font-size: 0.78rem;
+}
+.cs-flow-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.cs-flow-arrow {
+  text-align: center;
+  color: #94A3B8;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 1px 0;
+}
+.cs-flow-branch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+}
+.cs-badge-branch-a {
+  background: #22C55E;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cs-badge-mini-cyan {
+  background: #E0F2FE;
+  color: #0369A1;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--cs-radius-pill);
+}
+.cs-badge-mini-green {
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--cs-radius-pill);
+}
+
+/* Card 2: Security Audit Score & Steps */
+.cs-audit-header {
+  margin-bottom: 0.75rem;
+}
+.cs-audit-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 0.2rem;
+}
+.cs-audit-score {
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+.cs-audit-bar {
+  width: 100%;
+  height: 5px;
+  background: #E2E8F0;
+  border-radius: var(--cs-radius-pill);
+  overflow: hidden;
+}
+.cs-audit-fill {
+  width: 80%;
+  height: 100%;
+  background: #22C55E;
+  border-radius: var(--cs-radius-pill);
+}
+
+/* Card 3: Endpoint Security Checklist */
+.cs-endpoint-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 1rem;
+}
+.cs-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.cs-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #334155;
+}
+.cs-check-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #DCFCE7;
+  color: #15803D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Solution Card Typography Below Visual */
+.cs-solution-meta {
+  padding-top: 1.25rem;
+}
+.cs-solution-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 0.35rem;
+}
+.cs-solution-card-sub {
+  font-size: 0.9375rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   MAIN DASHBOARD & OPERATIONAL INTELLIGENCE CONTAINER
+   ========================================================================== */
+
+.cs-main {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+.cs-content-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.cs-section {
+  margin-bottom: 3.5rem;
+}
+
+.cs-section-header {
+  margin-bottom: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cs-section-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.25rem;
+  color: var(--cs-text-primary);
+}
+
+.cs-section-subtitle {
+  color: var(--cs-text-tertiary);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   METRICS STRIP (OPERATIONAL SPECIFICATION)
+   ========================================================================== */
+
+.cs-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: #FFFFFF;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  box-shadow: var(--cs-shadow-sm);
+  overflow: hidden;
+}
+
+.cs-metric {
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--cs-border);
+  position: relative;
+  background: #FFFFFF;
+  transition: background-color var(--cs-transition);
+}
+.cs-metric:last-child {
+  border-right: none;
+}
+.cs-metric:hover {
+  background: #F8FAFC;
+}
+
+.cs-metric-value {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--cs-text-primary);
+  margin-bottom: 0.5rem;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-metric-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-tertiary);
+  margin-bottom: 0.25rem;
+}
+
+.cs-metric-sub {
+  font-size: 0.75rem;
+  color: var(--cs-text-quaternary);
+}
+
+.cs-metric-critical .cs-metric-value {
+  color: var(--cs-critical);
+}
+.cs-metric-open .cs-metric-value {
+  color: var(--cs-high);
+}
+.cs-metric-active .cs-metric-value {
+  color: var(--cs-accent);
+}
+.cs-metric-resolved .cs-metric-value {
+  color: var(--cs-low);
+}
+
+/* ==========================================================================
+   CARDS & PANELS
+   ========================================================================== */
+
+.cs-card {
+  background: #FFFFFF;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--cs-shadow-sm);
+  position: relative;
+  transition: border-color var(--cs-transition), box-shadow var(--cs-transition);
+}
+.cs-card:hover {
+  border-color: var(--cs-border-hover);
+  box-shadow: var(--cs-shadow-md);
+}
+
+.cs-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.35rem;
+  gap: 1rem;
+}
+
+.cs-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--cs-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.cs-card-subtitle {
+  color: var(--cs-text-tertiary);
+  font-size: 0.8125rem;
+  margin-bottom: 0;
+}
+
+.cs-card-flush {
+  padding: 0;
+  overflow: hidden;
+}
+.cs-card-flush .cs-card-header {
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+/* Grid Layouts */
+.cs-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+.cs-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.cs-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.cs-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ==========================================================================
+   CHARTS
+   ========================================================================== */
+
+.cs-chart-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+/* ==========================================================================
+   RESTRAINED SEVERITY & STATUS BADGES (HUMAN-CRAFTED)
+   ========================================================================== */
+
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: var(--cs-radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.cs-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Severity Tiers */
+.cs-badge-critical {
+  background: var(--cs-critical-bg);
+  color: var(--cs-critical-text);
+  border: 1px solid var(--cs-critical-border);
+}
+.cs-badge-critical .cs-badge-dot {
+  background: var(--cs-critical);
+}
+
+.cs-badge-high {
+  background: var(--cs-high-bg);
+  color: var(--cs-high-text);
+  border: 1px solid var(--cs-high-border);
+}
+.cs-badge-high .cs-badge-dot {
+  background: var(--cs-high);
+}
+
+.cs-badge-medium {
+  background: var(--cs-medium-bg);
+  color: var(--cs-medium-text);
+  border: 1px solid var(--cs-medium-border);
+}
+.cs-badge-medium .cs-badge-dot {
+  background: var(--cs-medium);
+}
+
+.cs-badge-low {
+  background: var(--cs-low-bg);
+  color: var(--cs-low-text);
+  border: 1px solid var(--cs-low-border);
+}
+.cs-badge-low .cs-badge-dot {
+  background: var(--cs-low);
+}
+
+/* Status Variants */
+.cs-badge-open {
+  background: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+.cs-badge-open .cs-badge-dot {
+  background: var(--cs-status-open);
+}
+
+.cs-badge-investigating {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+}
+.cs-badge-investigating .cs-badge-dot {
+  background: var(--cs-status-investigating);
+}
+
+.cs-badge-contained {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+.cs-badge-contained .cs-badge-dot {
+  background: var(--cs-status-contained);
+}
+
+.cs-badge-resolved {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.cs-badge-resolved .cs-badge-dot {
+  background: var(--cs-status-resolved);
+}
+
+.cs-badge-closed {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+.cs-badge-closed .cs-badge-dot {
+  background: var(--cs-status-closed);
+}
+
+.cs-badge-neutral {
+  background: #F8FAFC;
+  color: #475569;
+  border: 1px solid var(--cs-border);
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+
+.cs-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cs-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.cs-table th {
+  padding: 0.85rem 1.25rem;
+  color: var(--cs-text-tertiary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--cs-border);
+  background: #F8FAFC;
+  white-space: nowrap;
+}
+
+.cs-table td {
+  padding: 1.05rem 1.25rem;
+  color: var(--cs-text-secondary);
+  border-bottom: 1px solid var(--cs-border-subtle);
+  vertical-align: middle;
+  transition: background-color var(--cs-transition);
+}
+
+.cs-table tbody tr:hover td {
+  background: #F8FAFC;
+  color: var(--cs-text-primary);
+}
+
+.cs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cs-table .cs-title-cell {
+  color: var(--cs-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cs-table .cs-title-cell:hover {
+  color: var(--cs-accent);
+}
+
+/* ==========================================================================
+   FORMS & INPUTS (POLISHED HUMAN-DESIGNED CONTROLS)
+   ========================================================================== */
+
+.cs-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.cs-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cs-text-secondary);
+  margin-bottom: 0.45rem;
+}
+.cs-label .cs-required {
+  color: var(--cs-critical);
+}
+
+.cs-input,
+.cs-select,
+.cs-textarea {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-sm);
+  color: var(--cs-text-primary);
+  font-family: var(--cs-font-sans);
+  font-size: 0.875rem;
+  padding: 0.65rem 0.95rem;
+  transition: border-color var(--cs-transition), box-shadow var(--cs-transition);
+  appearance: none;
+  outline: none;
+}
+
+.cs-input:focus,
+.cs-select:focus,
+.cs-textarea:focus {
+  border-color: var(--cs-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.cs-input::placeholder,
+.cs-textarea::placeholder {
+  color: var(--cs-text-quaternary);
+}
+
+.cs-select {
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+.cs-textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.cs-form-help {
+  font-size: 0.75rem;
+  color: var(--cs-text-tertiary);
+  margin-top: 0.35rem;
+}
+
+/* ==========================================================================
+   ALERTS & NOTIFICATIONS
+   ========================================================================== */
+
+.cs-alerts {
+  margin-bottom: 2rem;
+}
+
+.cs-alert {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--cs-radius-md);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.cs-alert-success {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+}
+
+.cs-alert-error,
+.cs-alert-danger {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.cs-alert-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0 0.3rem;
+  transition: opacity var(--cs-transition);
+}
+.cs-alert-close:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   EMPTY STATES
+   ========================================================================== */
+
+.cs-empty {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+}
+.cs-empty-icon {
+  font-size: 2rem;
+  color: var(--cs-text-quaternary);
+  margin-bottom: 0.75rem;
+}
+.cs-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cs-text-primary);
+  margin-bottom: 0.35rem;
+}
+.cs-empty-subtitle {
+  font-size: 0.8125rem;
+  color: var(--cs-text-tertiary);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   FOOTER (POLISHED ENTERPRISE SPEC)
+   ========================================================================== */
+
+.cs-footer {
+  border-top: 1px solid var(--cs-border);
+  padding: 2.5rem 0;
+  font-size: 0.8125rem;
+  color: var(--cs-text-tertiary);
+  background: #FFFFFF;
+}
+
+.cs-footer-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cs-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.cs-footer-links a {
+  color: var(--cs-text-tertiary);
+  font-weight: 500;
+}
+.cs-footer-links a:hover {
+  color: var(--cs-text-primary);
+}
+.cs-footer-sep {
+  color: var(--cs-text-quaternary);
+}
+
+/* ==========================================================================
+   SUBPAGE HEADER HERO (FOR ANALYSTS, AUDIT, INCIDENT DETAIL)
+   ========================================================================== */
+
+.cs-subpage-header {
+  background: #030712;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.75rem 0 2.25rem;
+  color: #FFFFFF;
+  margin-bottom: 2.5rem;
+}
+.cs-subpage-header h1,
+.cs-subpage-header .page-title {
+  color: #FFFFFF;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.03em;
+}
+.cs-subpage-header p {
+  color: #94A3B8;
+  font-size: 0.9375rem;
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   LEGACY / BACKWARDS COMPATIBILITY ALIASES
+   ========================================================================== */
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--cs-text-primary);
+  margin-bottom: 0.5rem;
+}
+.page-subtitle {
+  color: var(--cs-text-secondary);
+  font-size: 0.9375rem;
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+/* Legacy Button Aliases Mapped to Human Craft */
+.btn-pill-white {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-radius: var(--cs-radius-pill);
+  padding: 0.55rem 1.45rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all var(--cs-transition);
+}
+.btn-pill-white:hover {
+  background: #F1F5F9 !important;
+  transform: translateY(-1px);
+}
+
+.btn-pill-ghost {
+  background: transparent !important;
+  color: #475569 !important;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-sm);
+  padding: 0.45rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--cs-transition);
+}
+.btn-pill-ghost:hover {
+  color: #0F172A !important;
+  border-color: var(--cs-border-hover);
+  background: #F1F5F9 !important;
+}
+
+.btn-pill-cyan {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border: 1px solid #2563EB;
+  border-radius: var(--cs-radius-sm);
+  padding: 0.45rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--cs-transition);
+}
+.btn-pill-cyan:hover {
+  background: #1D4ED8 !important;
+  border-color: #1D4ED8;
+  color: #FFFFFF !important;
+}
+
+.btn-link-arrow {
+  color: var(--cs-accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--cs-transition);
+}
+.btn-link-arrow:hover {
+  gap: 0.5rem;
+  color: var(--cs-accent-hover);
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .cs-solutions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cs-solution-card:last-child {
+    grid-column: span 2;
+  }
+  .cs-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .cs-metric:nth-child(3) {
+    border-right: none;
+  }
+  .cs-metric:nth-child(4),
+  .cs-metric:nth-child(5) {
+    border-top: 1px solid var(--cs-border);
+  }
+  .cs-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cs-nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #030712;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .cs-nav-links.show {
+    display: flex;
+  }
+  .cs-nav-toggle {
+    display: flex;
+  }
+
+  .cs-hero-wrapper {
+    padding: 3rem 0 4rem;
+  }
+  .cs-hero-dots-pattern {
+    display: none;
+  }
+
+  .cs-solutions-grid {
+    grid-template-columns: 1fr;
+  }
+  .cs-solution-card:last-child {
+    grid-column: auto;
+  }
+
+  .cs-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cs-metric {
+    border-right: 1px solid var(--cs-border);
+    border-top: 1px solid var(--cs-border);
+  }
+  .cs-metric:nth-child(odd) {
+    border-right: 1px solid var(--cs-border);
+  }
+  .cs-metric:nth-child(even) {
+    border-right: none;
+  }
+  .cs-metric:first-child,
+  .cs-metric:nth-child(2) {
+    border-top: none;
+  }
+  .cs-metric:last-child {
+    grid-column: span 2;
+    border-right: none;
+  }
+
+  .cs-grid-4,
+  .cs-grid-3,
+  .cs-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .cs-metrics {
+    grid-template-columns: 1fr;
+  }
+  .cs-metric {
+    border-right: none !important;
+    border-top: 1px solid var(--cs-border) !important;
+  }
+  .cs-metric:first-child {
+    border-top: none !important;
+  }
+  .cs-metric:last-child {
+    grid-column: auto;
+  }
+  .cs-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cs-logos-container {
+    justify-content: center;
+  }
+}

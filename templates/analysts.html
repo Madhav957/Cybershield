@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Security Analyst Command | CyberShield{% endblock %}
+
+{% block content %}
+
+<!-- Subpage Dark Header Hero -->
+<section class="cs-subpage-header">
+    <div class="cs-content-container py-0">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div>
+                <h1 class="page-title mb-1">Security Analyst Command</h1>
+                <p>SOC personnel allocation, investigation workload metrics, and triage dispatch.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('dashboard') }}" class="cs-btn-secondary cs-btn-sm">
+                    &larr; Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="cs-content-container pt-0">
+
+    <!-- Workload Specification Strip -->
+    <div class="cs-metrics mb-5">
+        
+        <div class="cs-metric">
+            <span class="cs-metric-value">{{ analysts|length }}</span>
+            <span class="cs-metric-label">Active Analysts</span>
+            <span class="cs-metric-sub">Roster capacity</span>
+        </div>
+
+        <div class="cs-metric cs-metric-active">
+            <span class="cs-metric-value">
+                {{ analysts|sum(attribute='count_in_progress') }}
+            </span>
+            <span class="cs-metric-label">In Progress</span>
+            <span class="cs-metric-sub">Active investigations</span>
+        </div>
+
+        <div class="cs-metric cs-metric-resolved">
+            <span class="cs-metric-value">
+                {{ analysts|sum(attribute='count_completed') }}
+            </span>
+            <span class="cs-metric-label">Completed Cases</span>
+            <span class="cs-metric-sub">Concluded investigations</span>
+        </div>
+
+        <div class="cs-metric cs-metric-critical">
+            <span class="cs-metric-value">
+                {{ unassigned_incidents|length }}
+            </span>
+            <span class="cs-metric-label">Unassigned Queue</span>
+            <span class="cs-metric-sub">Awaiting triage</span>
+        </div>
+
+        <div class="cs-metric">
+            <span class="cs-metric-value">
+                {{ analysts|sum(attribute='total_assigned') }}
+            </span>
+            <span class="cs-metric-label">Total Assigned</span>
+            <span class="cs-metric-sub">Cumulative caseload</span>
+        </div>
+
+    </div>
+
+    <!-- Unassigned Incidents Triage Queue (If Any) -->
+    {% if unassigned_incidents %}
+    <div class="cs-card mb-5" style="border-color: #FECACA; background: #FEF2F2;">
+        <div class="cs-card-header">
+            <div>
+                <h3 class="cs-card-title" style="color: #991B1B;">Unassigned Security Incidents ({{ unassigned_incidents|length }})</h3>
+                <p class="cs-card-subtitle" style="color: #B91C1C;">These incidents require immediate assignment to a response analyst</p>
+            </div>
+        </div>
+
+        <div class="cs-table-wrapper" style="background: #FFFFFF; border-radius: 8px; border: 1px solid #FEE2E2;">
+            <table class="cs-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Incident</th>
+                        <th>Attack Vector</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Detected</th>
+                        <th>Assign Lead Analyst</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unassigned in unassigned_incidents %}
+                        <tr>
+                            <td class="cs-mono fw-semibold text-secondary">#{{ unassigned.incident_id }}</td>
+                            <td>
+                                <a href="{{ url_for('incident_detail', incident_id=unassigned.incident_id) }}" class="cs-title-cell">
+                                    {{ unassigned.title }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="cs-badge cs-badge-neutral">{{ unassigned.attack_type }}</span>
+                            </td>
+                            <td>
+                                {% if unassigned.severity == 'CRITICAL' %}
+                                    <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> CRITICAL</span>
+                                {% elif unassigned.severity == 'HIGH' %}
+                                    <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> HIGH</span>
+                                {% else %}
+                                    <span class="cs-badge cs-badge-medium"><span class="cs-badge-dot"></span> {{ unassigned.severity }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="cs-badge cs-badge-open"><span class="cs-badge-dot"></span> {{ unassigned.status }}</span>
+                            </td>
+                            <td class="cs-mono small" style="white-space: nowrap;">
+                                {{ unassigned.detected_at.strftime('%d %b %Y, %H:%M') if unassigned.detected_at else '—' }}
+                            </td>
+                            <td>
+                                {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                                    <form method="POST" action="{{ url_for('assign_analyst', incident_id=unassigned.incident_id) }}" class="d-flex align-items-center gap-2">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="next_url" value="{{ request.url }}">
+                                        <select name="analyst_id" class="cs-select py-1 px-2" style="font-size: 0.78rem; width: auto;" required>
+                                            <option value="">Select Analyst...</option>
+                                            {% for a in analysts %}
+                                                <option value="{{ a.analyst_id }}">{{ a.full_name }} ({{ a.role }})</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="cs-btn-primary cs-btn-sm py-1 px-3">
+                                            Assign
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="small" style="color: var(--cs-text-quaternary);">Pending Assignment</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Analyst Roster and Active Caseloads -->
+    <section>
+        <div class="cs-section-header">
+            <div>
+                <h2 class="cs-section-title">SOC Analyst Profiles &amp; Caseload</h2>
+                <p class="cs-section-subtitle">Active investigation telemetry, case conclusions, and forensic assignments per analyst.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for analyst in analysts %}
+                <div class="col-12">
+                    <div class="cs-card">
+                        
+                        <!-- Analyst Header Info -->
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 pb-3 border-bottom border-light-subtle mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: #EFF6FF; border: 1px solid #BFDBFE; font-weight: 700; color: #1D4ED8; font-size: 1rem;">
+                                    {{ analyst.full_name[:2].upper() }}
+                                </div>
+                                <div>
+                                    <h3 class="cs-card-title mb-0" style="font-size: 1.15rem;">{{ analyst.full_name }}</h3>
+                                    <div class="small" style="color: var(--cs-text-tertiary);">
+                                        {{ analyst.role }} &middot; <span class="cs-mono">{{ analyst.email }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Workload Counter Badges -->
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="cs-badge cs-badge-investigating" title="In Progress">
+                                    <span class="cs-badge-dot"></span> {{ analyst.count_in_progress or 0 }} IN PROGRESS
+                                </span>
+                                <span class="cs-badge cs-badge-low" title="Completed">
+                                    <span class="cs-badge-dot"></span> {{ analyst.count_completed or 0 }} COMPLETED
+                                </span>
+                                <span class="cs-badge cs-badge-neutral">
+                                    {{ analyst.total_assigned or 0 }} TOTAL CASES
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Assigned Incidents for This Analyst -->
+                        <h4 class="cs-label" style="color: var(--cs-text-tertiary); margin-bottom: 0.75rem;">
+                            Assigned Investigations ({{ analyst.assigned_incidents|length }})
+                        </h4>
+
+                        {% if analyst.assigned_incidents %}
+                            <div class="cs-table-wrapper">
+                                <table class="cs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Incident Title</th>
+                                            <th>Vector</th>
+                                            <th>Severity</th>
+                                            <th>Incident Status</th>
+                                            <th>Investigation Phase</th>
+                                            <th>Conclusion / Notes</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for inc in analyst.assigned_incidents %}
+                                            <tr>
+                                                <td class="cs-mono fw-semibold text-secondary">#{{ inc.incident_id }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('incident_detail', incident_id=inc.incident_id) }}" class="cs-title-cell">
+                                                        {{ inc.title }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="cs-badge cs-badge-neutral">{{ inc.attack_type }}</span>
+                                                </td>
+                                                <td>
+                                                    {% if inc.severity == 'CRITICAL' %}
+                                                        <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> CRITICAL</span>
+                                                    {% elif inc.severity == 'HIGH' %}
+                                                        <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> HIGH</span>
+                                                    {% else %}
+                                                        <span class="cs-badge cs-badge-medium"><span class="cs-badge-dot"></span> {{ inc.severity }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="cs-badge cs-badge-{{ inc.status|lower }}">
+                                                        <span class="cs-badge-dot"></span> {{ inc.status }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if inc.investigation_status == 'COMPLETED' %}
+                                                        <span class="cs-badge cs-badge-low"><span class="cs-badge-dot"></span> COMPLETED</span>
+                                                    {% elif inc.investigation_status == 'IN_PROGRESS' %}
+                                                        <span class="cs-badge cs-badge-investigating"><span class="cs-badge-dot"></span> IN_PROGRESS</span>
+                                                    {% else %}
+                                                        <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> ASSIGNED</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="small" style="max-width: 280px; color: var(--cs-text-secondary);">
+                                                    {{ inc.conclusion or 'Investigation active; notes pending' }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('incident_detail', incident_id=inc.incident_id) }}" class="cs-link-arrow small">
+                                                        View &rarr;
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="cs-empty py-3 text-start">
+                                <p class="cs-empty-subtitle m-0">No investigations currently assigned to this analyst.</p>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

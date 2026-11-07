@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block title %}Incident #{{ incident.incident_id }} — {{ incident.title }} | CyberShield{% endblock %}
+
+{% block content %}
+
+<!-- Subpage Dark Header Hero -->
+<section class="cs-subpage-header">
+    <div class="cs-content-container py-0">
+        
+        <!-- Breadcrumb -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <a href="{{ url_for('dashboard') }}" class="cs-link-arrow small" style="color: #94A3B8;">
+                &larr; Dashboard
+            </a>
+            <span style="color: #475569;">/</span>
+            <span class="cs-mono small fw-semibold" style="color: #60A5FA;">INCIDENT-{{ incident.incident_id }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                    <h1 class="page-title mb-0" style="color: #FFFFFF;">{{ incident.title }}</h1>
+                    
+                    <!-- Severity Badge -->
+                    {% if incident.severity == 'CRITICAL' %}
+                        <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> CRITICAL</span>
+                    {% elif incident.severity == 'HIGH' %}
+                        <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> HIGH</span>
+                    {% elif incident.severity == 'MEDIUM' %}
+                        <span class="cs-badge cs-badge-medium"><span class="cs-badge-dot"></span> MEDIUM</span>
+                    {% else %}
+                        <span class="cs-badge cs-badge-low"><span class="cs-badge-dot"></span> LOW</span>
+                    {% endif %}
+
+                    <!-- Status Badge -->
+                    <span class="cs-badge cs-badge-{{ incident.status|lower }}">
+                        <span class="cs-badge-dot"></span> {{ incident.status }}
+                    </span>
+                </div>
+                
+                <p style="color: #94A3B8; font-size: 0.875rem; margin-bottom: 0;">
+                    Vector: <span style="color: #FFFFFF; font-weight: 500;">{{ incident.attack_type }}</span> &nbsp;|&nbsp;
+                    Detected: <span style="color: #FFFFFF;">{{ incident.detected_at.strftime('%d %b %Y, %H:%M:%S UTC') if incident.detected_at else 'Unknown' }}</span>
+                    {% if incident.resolved_at %}
+                        &nbsp;|&nbsp; Resolved: <span style="color: #4ADE80;">{{ incident.resolved_at.strftime('%d %b %Y, %H:%M:%S UTC') }}</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                    <a href="{{ url_for('edit_incident', incident_id=incident.incident_id) }}" class="cs-btn-secondary cs-btn-sm">
+                        Edit Incident
+                    </a>
+
+                    <!-- Status Transition Control -->
+                    {% set next_statuses = status_transitions.get(incident.status, []) %}
+                    {% if next_statuses %}
+                        <form method="POST" action="{{ url_for('update_incident_status', incident_id=incident.incident_id) }}" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="next_url" value="{{ request.url }}">
+                            
+                            <select name="status" class="cs-select py-1 px-3" style="font-size: 0.8125rem; width: auto;" required>
+                                {% for next_st in next_statuses %}
+                                    <option value="{{ next_st }}">Transition &rarr; {{ next_st }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <button type="submit" class="cs-btn-primary cs-btn-sm">
+                                Execute Transition
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="cs-badge cs-badge-low">
+                            <span class="cs-badge-dot"></span> Terminal Closed
+                        </span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="cs-content-container pt-0">
+
+    <div class="row g-4">
+        
+        <!-- Left Column: Synopsis, Devices, IPs -->
+        <div class="col-12 col-lg-8">
+            
+            <!-- Incident Synopsis & Scope -->
+            <div class="cs-card mb-4">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Incident Synopsis</h3>
+                        <p class="cs-card-subtitle">Operational description and detected scope</p>
+                    </div>
+                </div>
+                <div style="white-space: pre-wrap; font-size: 0.9375rem; line-height: 1.65; color: var(--cs-text-secondary);">
+                    {{ incident.description or 'No detailed description recorded at the time of detection.' }}
+                </div>
+            </div>
+
+            <!-- Impacted Endpoints & Infrastructure -->
+            <div class="cs-card mb-4">
+                <div class="cs-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="cs-card-title">Impacted Endpoints ({{ devices|length }})</h3>
+                        <p class="cs-card-subtitle">Affected network hardware, workstations, and servers</p>
+                    </div>
+                    {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                    <button class="cs-btn-secondary cs-btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#addDeviceCollapse" aria-expanded="false">
+                        + Link Device
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                <!-- Collapsible Link Device Form -->
+                <div class="collapse mb-3" id="addDeviceCollapse">
+                    <form method="POST" action="{{ url_for('link_incident_device', incident_id=incident.incident_id) }}" class="p-3 border rounded-3 mb-2" style="background: #F8FAFC; border-color: var(--cs-border) !important;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-5">
+                                <label class="cs-label">Select Device</label>
+                                <select name="device_id" class="cs-select" required>
+                                    <option value="">Choose Device...</option>
+                                    {% for d in all_devices %}
+                                        <option value="{{ d.device_id }}">
+                                            {{ d.hostname }} ({{ d.device_type }} &middot; {{ d.department }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <label class="cs-label">Impact Description</label>
+                                <input type="text" name="impact_description" class="cs-input" placeholder="e.g. Account credentials compromised">
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <button type="submit" class="cs-btn-primary cs-btn-sm w-100">Attach</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if devices %}
+                    <div class="cs-table-wrapper">
+                        <table class="cs-table">
+                            <thead>
+                                <tr>
+                                    <th>Hostname</th>
+                                    <th>Type / OS</th>
+                                    <th>Department</th>
+                                    <th>Criticality</th>
+                                    <th>Impact Synopsis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in devices %}
+                                    <tr>
+                                        <td class="cs-mono fw-semibold" style="color: var(--cs-text-primary);">{{ d.hostname }}</td>
+                                        <td>{{ d.device_type }} <span style="color: var(--cs-text-tertiary);">({{ d.operating_system or 'Unknown OS' }})</span></td>
+                                        <td>{{ d.department or '—' }}</td>
+                                        <td>
+                                            {% if d.criticality == 'CRITICAL' %}
+                                                <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> CRITICAL</span>
+                                            {% elif d.criticality == 'HIGH' %}
+                                                <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> HIGH</span>
+                                            {% else %}
+                                                <span class="cs-badge cs-badge-medium"><span class="cs-badge-dot"></span> {{ d.criticality }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small" style="color: var(--cs-text-secondary);">{{ d.impact_description or 'No notes' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="cs-empty py-4">
+                        <p class="cs-empty-subtitle">No endpoint hardware currently linked to this incident.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Associated IP Addresses -->
+            <div class="cs-card mb-4">
+                <div class="cs-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="cs-card-title">Associated IP Addresses ({{ ip_addresses|length }})</h3>
+                        <p class="cs-card-subtitle">Network indicators, source originators, and command &amp; control nodes</p>
+                    </div>
+                    {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                    <button class="cs-btn-secondary cs-btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#addIpCollapse" aria-expanded="false">
+                        + Link IP
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                <!-- Collapsible Link IP Form -->
+                <div class="collapse mb-3" id="addIpCollapse">
+                    <form method="POST" action="{{ url_for('link_incident_ip', incident_id=incident.incident_id) }}" class="p-3 border rounded-3 mb-2" style="background: #F8FAFC; border-color: var(--cs-border) !important;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-5">
+                                <label class="cs-label">Select IP Address</label>
+                                <select name="ip_id" class="cs-select" required>
+                                    <option value="">Choose Indicator...</option>
+                                    {% for ip in all_ips %}
+                                        <option value="{{ ip.ip_id }}">
+                                            {{ ip.ip_address }} (Reputation: {{ ip.reputation }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <label class="cs-label">Association Type</label>
+                                <select name="association_type" class="cs-select" required>
+                                    <option value="SOURCE">SOURCE</option>
+                                    <option value="DESTINATION">DESTINATION</option>
+                                    <option value="RELATED" selected>RELATED</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <button type="submit" class="cs-btn-primary cs-btn-sm w-100">Attach</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if ip_addresses %}
+                    <div class="cs-table-wrapper">
+                        <table class="cs-table">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Association</th>
+                                    <th>Reputation Risk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ip in ip_addresses %}
+                                    <tr>
+                                        <td class="cs-mono fw-semibold" style="color: var(--cs-text-primary);">{{ ip.ip_address }}</td>
+                                        <td>
+                                            <span class="cs-badge cs-badge-neutral">{{ ip.association_type }}</span>
+                                        </td>
+                                        <td>
+                                            {% if ip.reputation == 'HIGH' %}
+                                                <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> HIGH RISK</span>
+                                            {% elif ip.reputation == 'MEDIUM' %}
+                                                <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> MEDIUM RISK</span>
+                                            {% elif ip.reputation == 'LOW' %}
+                                                <span class="cs-badge cs-badge-low"><span class="cs-badge-dot"></span> LOW RISK</span>
+                                            {% else %}
+                                                <span class="cs-badge cs-badge-neutral"><span class="cs-badge-dot"></span> UNKNOWN</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="cs-empty py-4">
+                        <p class="cs-empty-subtitle">No network IP addresses associated with this event.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Right Column: Investigation Command & Audit History -->
+        <div class="col-12 col-lg-4">
+            
+            <!-- Investigation & Analyst Assignment Card -->
+            <div id="assignment-card" class="cs-card mb-4">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Investigation Status</h3>
+                        <p class="cs-card-subtitle">SOC analyst findings &amp; forensic lifecycle</p>
+                    </div>
+                </div>
+
+                {% if incident.analyst_id %}
+                    <!-- Assigned Analyst Profile -->
+                    <div class="p-3 border rounded-3 mb-3" style="background: #F8FAFC; border-color: var(--cs-border) !important;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-semibold" style="color: var(--cs-text-primary);">{{ incident.analyst_name }}</div>
+                                <div class="small" style="color: var(--cs-text-secondary);">{{ incident.analyst_role }}</div>
+                                <div class="cs-mono small" style="color: var(--cs-text-tertiary);">{{ incident.analyst_email }}</div>
+                            </div>
+                            <span class="cs-badge cs-badge-investigating">
+                                <span class="cs-badge-dot"></span> {{ incident.investigation_status }}
+                            </span>
+                        </div>
+                        <div class="small" style="color: var(--cs-text-tertiary);">
+                            Assigned: {{ incident.investigation_started_at.strftime('%d %b %Y, %H:%M') if incident.investigation_started_at else '—' }}
+                        </div>
+                    </div>
+
+                    {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                        <!-- Update Investigation Form -->
+                        <form method="POST" action="{{ url_for('update_investigation', incident_id=incident.incident_id) }}" class="mb-3">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="mb-3">
+                                <label class="cs-label">Investigation Phase</label>
+                                <select name="status" class="cs-select" required>
+                                    <option value="ASSIGNED" {% if incident.investigation_status == 'ASSIGNED' %}selected{% endif %}>ASSIGNED</option>
+                                    <option value="IN_PROGRESS" {% if incident.investigation_status == 'IN_PROGRESS' %}selected{% endif %}>IN_PROGRESS</option>
+                                    <option value="COMPLETED" {% if incident.investigation_status == 'COMPLETED' %}selected{% endif %}>COMPLETED</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="cs-label">Findings &amp; Conclusion</label>
+                                <textarea name="conclusion" class="cs-textarea" rows="3" placeholder="Document containment actions, root causes, or forensic conclusions...">{{ incident.conclusion or '' }}</textarea>
+                            </div>
+                            <button type="submit" class="cs-btn-primary cs-btn-sm w-100">
+                                Save Investigation Notes
+                            </button>
+                        </form>
+
+                        <!-- Reassign Analyst Accordion -->
+                        <button class="cs-btn-secondary cs-btn-sm w-100" type="button" data-bs-toggle="collapse" data-bs-target="#reassignCollapse" aria-expanded="false">
+                            Reassign Lead Analyst
+                        </button>
+                        <div class="collapse mt-2" id="reassignCollapse">
+                            <form method="POST" action="{{ url_for('assign_analyst', incident_id=incident.incident_id) }}" class="p-3 border rounded-3" style="background: #F8FAFC; border-color: var(--cs-border) !important;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <label class="cs-label">Select New Analyst</label>
+                                <select name="analyst_id" class="cs-select mb-2" required>
+                                    {% for a in analysts %}
+                                        <option value="{{ a.analyst_id }}" {% if a.analyst_id == incident.analyst_id %}selected{% endif %}>
+                                            {{ a.full_name }} ({{ a.role }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="cs-btn-primary cs-btn-sm w-100">Confirm Reassignment</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <!-- Read-only view for Viewer -->
+                        <div class="mb-3">
+                            <label class="cs-label">Findings &amp; Conclusion</label>
+                            <div class="p-3 border rounded-3 small" style="background: #F8FAFC; border-color: var(--cs-border) !important; color: var(--cs-text-secondary); line-height: 1.5;">
+                                {{ incident.conclusion or 'No forensic conclusions documented yet.' }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Unassigned State -->
+                    <div class="cs-alert cs-alert-error mb-3 p-3">
+                        <div>
+                            <div class="fw-semibold mb-1">Incident Unassigned</div>
+                            <div class="small">Assign a lead security analyst to commence triage and response operations.</div>
+                        </div>
+                    </div>
+
+                    {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                    <form method="POST" action="{{ url_for('assign_analyst', incident_id=incident.incident_id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label class="cs-label">Assign Lead Analyst</label>
+                            <select name="analyst_id" class="cs-select" required>
+                                <option value="">Choose Analyst...</option>
+                                {% for a in analysts %}
+                                    <option value="{{ a.analyst_id }}">
+                                        {{ a.full_name }} ({{ a.role }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="cs-btn-primary cs-btn-sm w-100">
+                            Assign Analyst
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Incident Audit History Timeline -->
+            <div class="cs-card">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Audit Timeline</h3>
+                        <p class="cs-card-subtitle">State transitions captured by MySQL triggers</p>
+                    </div>
+                </div>
+
+                {% if history %}
+                    <ul class="cs-timeline" style="list-style: none; padding-left: 1.5rem; margin: 0; position: relative;">
+                        {% for h in history %}
+                            <li class="cs-timeline-item" style="position: relative; padding-bottom: 1.25rem;">
+                                <div class="d-flex align-items-center gap-1 mb-1">
+                                    <span class="cs-badge cs-badge-{{ h.old_status|lower }}" style="font-size: 0.65rem; padding: 2px 6px;">{{ h.old_status }}</span>
+                                    <span style="color: var(--cs-text-quaternary);">&rarr;</span>
+                                    <span class="cs-badge cs-badge-{{ h.new_status|lower }}" style="font-size: 0.65rem; padding: 2px 6px;">{{ h.new_status }}</span>
+                                </div>
+                                <div class="small" style="color: var(--cs-text-secondary);">
+                                    Changed by <span style="color: var(--cs-text-primary); font-weight: 500;">{{ h.changed_by }}</span>
+                                </div>
+                                <div class="cs-mono" style="font-size: 0.75rem; color: var(--cs-text-tertiary);">
+                                    {{ h.changed_at.strftime('%d %b %Y, %H:%M:%S') if h.changed_at else '—' }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="cs-empty py-3">
+                        <p class="cs-empty-subtitle">Initial state: OPEN.<br>No subsequent transitions recorded.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

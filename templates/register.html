@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}User Administration &amp; Access Control | CyberShield{% endblock %}
+
+{% block content %}
+
+<!-- Subpage Dark Header Hero -->
+<section class="cs-subpage-header">
+    <div class="cs-content-container py-0">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="cs-badge cs-badge-neutral" style="font-size: 0.68rem; letter-spacing: 0.08em; font-weight: 700;">
+                        ADMINISTRATIVE CONSOLE
+                    </span>
+                </div>
+                <h1 class="page-title mb-1">User Administration &amp; RBAC</h1>
+                <p>
+                    Provision operational accounts, assign role permissions (ADMIN, ANALYST, VIEWER), and manage account status.
+                </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('dashboard') }}" class="cs-btn-secondary cs-btn-sm">
+                    &larr; Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="cs-content-container pt-0">
+
+    <div class="row g-4">
+        
+        <!-- Left: Register New User Form -->
+        <div class="col-12 col-lg-5">
+            <div class="cs-card p-4">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Provision New Account</h3>
+                        <p class="cs-card-subtitle">Create user credentials with role assignment</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('register_user') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="cs-form-group mb-3">
+                        <label for="full_name" class="cs-label">Full Name <span class="cs-required">*</span></label>
+                        <input type="text" id="full_name" name="full_name" class="cs-input"
+                               placeholder="e.g. Maya Patel" maxlength="100" required>
+                    </div>
+
+                    <div class="cs-form-group mb-3">
+                        <label for="username" class="cs-label">Username <span class="cs-required">*</span></label>
+                        <input type="text" id="username" name="username" class="cs-input"
+                               placeholder="e.g. mpatel" maxlength="50" required>
+                    </div>
+
+                    <div class="cs-form-group mb-3">
+                        <label for="email" class="cs-label">Corporate Email <span class="cs-required">*</span></label>
+                        <input type="email" id="email" name="email" class="cs-input"
+                               placeholder="e.g. maya.patel@cybershield.local" maxlength="150" required>
+                    </div>
+
+                    <div class="cs-form-group mb-3">
+                        <label for="password" class="cs-label">Initial Password <span class="cs-required">*</span></label>
+                        <input type="password" id="password" name="password" class="cs-input"
+                               placeholder="Min 8 characters" minlength="8" required>
+                        <div class="cs-form-help">Must be at least 8 characters. Passwords are salted and hashed with Werkzeug.</div>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-12 col-sm-6">
+                            <label for="role_id" class="cs-label">Assign Role <span class="cs-required">*</span></label>
+                            <select id="role_id" name="role_id" class="cs-select" required>
+                                {% for r in roles %}
+                                    <option value="{{ r.role_id }}" {% if r.role_name == 'ANALYST' %}selected{% endif %}>
+                                        {{ r.role_name }} &mdash; {{ r.description }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label for="account_status" class="cs-label">Status <span class="cs-required">*</span></label>
+                            <select id="account_status" name="account_status" class="cs-select" required>
+                                <option value="ACTIVE" selected>ACTIVE</option>
+                                <option value="DISABLED">DISABLED</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="cs-btn-primary w-100 justify-content-center">
+                        Register Account
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Registered User Directory Table -->
+        <div class="col-12 col-lg-7">
+            <div class="cs-card cs-card-flush">
+                <div class="cs-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="cs-card-title">Registered Accounts ({{ existing_users|length }})</h3>
+                        <p class="cs-card-subtitle">Active directory of platform personnel and access tiers</p>
+                    </div>
+                </div>
+
+                <div class="cs-table-wrapper">
+                    <table class="cs-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in existing_users %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold" style="color: var(--cs-text-primary);">{{ u.full_name }}</div>
+                                        <div class="cs-mono text-tertiary small">@{{ u.username }}</div>
+                                    </td>
+                                    <td class="small">{{ u.email }}</td>
+                                    <td>
+                                        {% if u.role_name == 'ADMIN' %}
+                                            <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> ADMIN</span>
+                                        {% elif u.role_name == 'ANALYST' %}
+                                            <span class="cs-badge cs-badge-investigating"><span class="cs-badge-dot"></span> ANALYST</span>
+                                        {% else %}
+                                            <span class="cs-badge cs-badge-neutral"><span class="cs-badge-dot"></span> VIEWER</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if u.account_status == 'ACTIVE' %}
+                                            <span class="cs-badge cs-badge-low">ACTIVE</span>
+                                        {% else %}
+                                            <span class="cs-badge cs-badge-closed">DISABLED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="cs-mono small" style="white-space: nowrap;">
+                                        {{ u.last_login.strftime('%d %b %Y, %H:%M') if u.last_login else 'Never' }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

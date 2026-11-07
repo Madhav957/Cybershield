@@ -1,0 +1,766 @@
+{% extends "base.html" %}
+
+{% block title %}CyberShield | Security Operations{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================================
+     1. HERO INTRODUCTION — CYBERSHIELD SECURITY OPERATIONS
+     ========================================================================= -->
+<section class="cs-hero-wrapper">
+    <!-- Starfield / Constellation Glow Dots -->
+    <div class="cs-hero-dots-pattern" aria-hidden="true"></div>
+
+    <div class="cs-hero-container">
+        
+        <!-- Badge -->
+        <div class="cs-hero-badge">
+            <span>SECURITY OPERATIONS / OVERVIEW</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="cs-hero-title">
+            Your security operations,<br>
+            at a glance.
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="cs-hero-subtitle">
+            Monitor incidents. Track investigations. Stay ahead of threats.
+        </p>
+
+        <!-- Actions -->
+        <div class="cs-hero-actions">
+            {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+            <a href="{{ url_for('add_incident') }}" class="cs-btn-pill-dark">
+                + Create Incident
+            </a>
+            {% endif %}
+            <a href="#incidents" class="cs-hero-link">
+                View Incidents &rarr;
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- =========================================================================
+     2. METRICS STRIP — SIX LIVE MYSQL DASHBOARD METRICS
+     ========================================================================= -->
+<section class="cs-logos-ribbon">
+    <div class="cs-logos-container">
+        
+        <!-- Total Incidents -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-text-primary);">{{ stats.total or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Total Incidents</span>
+        </div>
+
+        <!-- Open -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-critical);">{{ stats.count_open or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Open</span>
+        </div>
+
+        <!-- Investigating -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-accent);">{{ stats.count_investigating or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Investigating</span>
+        </div>
+
+        <!-- Contained -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-high);">{{ stats.count_contained or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Contained</span>
+        </div>
+
+        <!-- Resolved -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-low);">{{ stats.count_resolved or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Resolved</span>
+        </div>
+
+        <!-- Critical -->
+        <div class="cs-logo-item">
+            <span class="cs-mono fw-bold" style="font-size: 1.25rem; color: var(--cs-critical);">{{ stats.count_critical or 0 }}</span>
+            <span style="color: var(--cs-text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em;">Critical</span>
+        </div>
+
+    </div>
+</section>
+
+<!-- =========================================================================
+     3. SOLUTIONS SECTION — THREE WORKFLOW & CAPABILITY CARDS
+     ========================================================================= -->
+<section id="solutions" class="cs-solutions-section">
+    <div class="cs-solutions-container">
+        
+        <!-- Header -->
+        <div class="cs-solutions-header">
+            <span class="cs-solutions-eyebrow">SOLUTIONS</span>
+            <h2 class="cs-solutions-title">
+                Every action visible.<br>
+                Every decision defensible.
+            </h2>
+        </div>
+
+        <!-- 3 Feature Cards Grid -->
+        <div class="cs-solutions-grid">
+            
+            <!-- Card 1: Proactive Security -->
+            <div class="cs-solution-card">
+                <div class="cs-card-visual cs-card-visual-1">
+                    <div class="cs-floating-card">
+                        
+                        <!-- Flow Step 1 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #EA580C; font-size: 0.85rem;">&#9888;</span>
+                                <span>High-risk event detected</span>
+                            </div>
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Flow Step 2 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #2563EB; font-size: 0.85rem;">&#128065;</span>
+                                <span>Investigation</span>
+                            </div>
+                            <span class="cs-badge-mini-cyan">Complete</span>
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Flow Step 3 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #475569; font-size: 0.85rem;">&#128274;</span>
+                                <span>Containment</span>
+                            </div>
+                            <span class="cs-badge-mini-cyan">Staged</span>
+                        </div>
+
+                        <!-- Branch Step 4 -->
+                        <div class="cs-flow-branch">
+                            <span class="cs-badge-branch-a">A</span>
+                            <span class="cs-badge-mini-green">Approved</span>
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Step 5 -->
+                        <div class="text-center py-1" style="font-size: 0.72rem; color: #64748B; font-weight: 500;">
+                            Human-in-the-loop
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Step 6 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #059669; font-size: 0.85rem;">&#128193;</span>
+                                <span>Logged</span>
+                            </div>
+                            <span class="cs-badge-mini-green">Resolved</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="cs-solution-meta">
+                    <h3 class="cs-solution-card-title">Proactive Security</h3>
+                    <p class="cs-solution-card-sub">Threats handled before the team wakes up.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Penetration Testing -->
+            <div class="cs-solution-card">
+                <div class="cs-card-visual cs-card-visual-2">
+                    <div class="cs-floating-card">
+                        
+                        <div class="cs-audit-header">
+                            <div class="cs-audit-title">Security Audit</div>
+                            <div class="cs-audit-score">Score: 80/100</div>
+                            <div class="cs-audit-bar">
+                                <div class="cs-audit-fill"></div>
+                            </div>
+                        </div>
+
+                        <!-- Flow Step 1 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #EA580C; font-size: 0.85rem;">&#9650;</span>
+                                <span>Context applied</span>
+                            </div>
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Flow Step 2 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #2563EB; font-size: 0.85rem;">&#9889;</span>
+                                <span>Action staged</span>
+                            </div>
+                        </div>
+
+                        <div class="cs-flow-arrow">&darr;</div>
+
+                        <!-- Flow Step 3 -->
+                        <div class="cs-flow-step">
+                            <div class="cs-flow-left">
+                                <span style="color: #059669; font-size: 0.85rem;">&#10003;</span>
+                                <span>Issue resolved</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="cs-solution-meta">
+                    <h3 class="cs-solution-card-title">Penetration Testing</h3>
+                    <p class="cs-solution-card-sub">Know what's coming before it arrives.</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Endpoint Security -->
+            <div class="cs-solution-card">
+                <div class="cs-card-visual cs-card-visual-3">
+                    <div class="cs-floating-card">
+                        <div class="cs-endpoint-title">Endpoint Security</div>
+                        
+                        <div class="cs-checklist">
+                            <div class="cs-check-item">
+                                <span class="cs-check-icon">&#10003;</span>
+                                <span>Device protection</span>
+                            </div>
+                            <div class="cs-check-item">
+                                <span class="cs-check-icon">&#10003;</span>
+                                <span>Network control</span>
+                            </div>
+                            <div class="cs-check-item">
+                                <span class="cs-check-icon">&#10003;</span>
+                                <span>Browse protection</span>
+                            </div>
+                            <div class="cs-check-item">
+                                <span class="cs-check-icon">&#10003;</span>
+                                <span>Data control</span>
+                            </div>
+                            <div class="cs-check-item">
+                                <span class="cs-check-icon">&#10003;</span>
+                                <span>Application control</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="cs-solution-meta">
+                    <h3 class="cs-solution-card-title">Endpoint Security</h3>
+                    <p class="cs-solution-card-sub">Every device protected. Every edge secured.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- =========================================================================
+     4. OPERATIONAL CONTENT — MYSQL LIVE INCIDENT INTELLIGENCE
+     ========================================================================= -->
+<div class="cs-content-container">
+
+    <!-- Operational Metrics Strip -->
+    <section class="cs-section">
+        <div class="cs-metrics">
+            
+            <!-- Total Incidents -->
+            <div class="cs-metric">
+                <span class="cs-metric-value">{{ stats.total or 0 }}</span>
+                <span class="cs-metric-label">Total Incidents</span>
+                <span class="cs-metric-sub">Recorded to date</span>
+            </div>
+
+            <!-- Open Incidents -->
+            <div class="cs-metric cs-metric-open">
+                <span class="cs-metric-value">{{ stats.count_open or 0 }}</span>
+                <span class="cs-metric-label">Open Incidents</span>
+                <span class="cs-metric-sub">Pending triage</span>
+            </div>
+
+            <!-- Under Investigation -->
+            <div class="cs-metric cs-metric-active">
+                <span class="cs-metric-value">{{ stats.count_investigating or 0 }}</span>
+                <span class="cs-metric-label">Under Investigation</span>
+                <span class="cs-metric-sub">Assigned to analysts</span>
+            </div>
+
+            <!-- Resolved Incidents -->
+            <div class="cs-metric cs-metric-resolved">
+                <span class="cs-metric-value">{{ (stats.count_resolved or 0) + (stats.count_closed or 0) }}</span>
+                <span class="cs-metric-label">Resolved Incidents</span>
+                <span class="cs-metric-sub">{{ stats.count_closed or 0 }} fully closed</span>
+            </div>
+
+            <!-- Critical Threats -->
+            <div class="cs-metric cs-metric-critical">
+                <span class="cs-metric-value">{{ stats.count_critical_high or 0 }}</span>
+                <span class="cs-metric-label">Critical Threats</span>
+                <span class="cs-metric-sub">{{ stats.count_critical or 0 }} critical priority</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Analytics Charts Section -->
+    <section id="telemetry" class="cs-section">
+        <div class="cs-section-header">
+            <div>
+                <h2 class="cs-section-title">Threat &amp; Operations Intelligence</h2>
+                <p class="cs-section-subtitle">Real-time analytical telemetry aggregated directly from MySQL.</p>
+            </div>
+            <span class="cs-badge cs-badge-neutral d-none d-md-inline-flex">
+                Live MySQL Telemetry
+            </span>
+        </div>
+
+        <div class="cs-grid cs-grid-4">
+
+            <!-- Severity Profile -->
+            <div class="cs-card">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Severity Profile</h3>
+                        <p class="cs-card-subtitle">Distribution by urgency tier</p>
+                    </div>
+                </div>
+                <div class="cs-chart-container">
+                    <canvas id="severityChart" role="img" aria-label="Severity Profile chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Lifecycle Status -->
+            <div class="cs-card">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Lifecycle Status</h3>
+                        <p class="cs-card-subtitle">Incidents across workflow states</p>
+                    </div>
+                </div>
+                <div class="cs-chart-container">
+                    <canvas id="statusChart" role="img" aria-label="Lifecycle Status chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Attack Vectors -->
+            <div class="cs-card">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Attack Vectors</h3>
+                        <p class="cs-card-subtitle">Frequency by classification</p>
+                    </div>
+                </div>
+                <div class="cs-chart-container">
+                    <canvas id="attackTypeChart" role="img" aria-label="Attack Vectors chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Analyst Workload -->
+            <div class="cs-card">
+                <div class="cs-card-header">
+                    <div>
+                        <h3 class="cs-card-title">Analyst Workload</h3>
+                        <p class="cs-card-subtitle">Active investigations by analyst</p>
+                    </div>
+                </div>
+                <div class="cs-chart-container">
+                    <canvas id="analystWorkloadChart" role="img" aria-label="Analyst Workload chart"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Incident Management & Search Console -->
+    <section id="incidents" class="cs-section">
+
+        <!-- Search & Filter Controls -->
+        <div class="cs-card mb-4">
+            <div class="cs-card-header">
+                <div>
+                    <h3 class="cs-card-title">Filter Incident Register</h3>
+                    <p class="cs-card-subtitle">Filter across incident ID, title, classification, severity, or lead analyst.</p>
+                </div>
+                <a href="{{ url_for('dashboard') }}#incidents" class="cs-btn-secondary cs-btn-sm">
+                    Reset Filters
+                </a>
+            </div>
+
+            <form method="GET" action="{{ url_for('dashboard') }}#incidents">
+                <div class="row g-3">
+                    
+                    <div class="col-12 col-lg-5">
+                        <label for="q" class="cs-label">Search Keywords</label>
+                        <input type="search" id="q" name="q" class="cs-input"
+                               placeholder="Search title, ID, analyst, notes..."
+                               value="{{ filters.q }}" maxlength="100">
+                    </div>
+
+                    <div class="col-12 col-sm-4 col-lg-2">
+                        <label for="severity_filter" class="cs-label">Severity</label>
+                        <select id="severity_filter" name="severity_filter" class="cs-select">
+                            <option value="">All Severities</option>
+                            {% for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] %}
+                                <option value="{{ sev }}" {% if filters.severity_filter == sev %}selected{% endif %}>
+                                    {{ sev }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-4 col-lg-2">
+                        <label for="status_filter" class="cs-label">Status</label>
+                        <select id="status_filter" name="status_filter" class="cs-select">
+                            <option value="">All Statuses</option>
+                            {% for st in ['OPEN', 'INVESTIGATING', 'CONTAINED', 'RESOLVED', 'CLOSED'] %}
+                                <option value="{{ st }}" {% if filters.status_filter == st %}selected{% endif %}>
+                                    {{ st }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-4 col-lg-3">
+                        <label for="attack_type_filter" class="cs-label">Attack Vector</label>
+                        <select id="attack_type_filter" name="attack_type_filter" class="cs-select">
+                            <option value="">All Vectors</option>
+                            {% for at in attack_types %}
+                                <option value="{{ at.type_name }}" {% if filters.attack_type_filter == at.type_name %}selected{% endif %}>
+                                    {{ at.type_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2">
+                        <button type="submit" class="cs-btn-primary">
+                            Apply Filters
+                        </button>
+                        <span class="text-secondary small">
+                            Showing {{ incidents|length }} matching incident{{ '' if incidents|length == 1 else 's' }}
+                        </span>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- Master Incident Directory Table -->
+        <div class="cs-card cs-card-flush">
+            <div class="cs-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="cs-card-title">Master Incident Directory</h3>
+                    <p class="cs-card-subtitle">Real-time incident response register and status transitions</p>
+                </div>
+                <a href="{{ url_for('add_incident') }}" class="cs-btn-secondary cs-btn-sm">
+                    + New Incident
+                </a>
+            </div>
+
+            <div class="cs-table-wrapper">
+                <table class="cs-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Incident Title</th>
+                            <th>Attack Type</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Lead Analyst</th>
+                            <th>Detected Date</th>
+                            <th>Update Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inc in incidents %}
+                            <tr>
+                                <td class="cs-mono text-secondary fw-semibold">#{{ inc.incident_id }}</td>
+                                <td>
+                                    <a href="{{ url_for('incident_detail', incident_id=inc.incident_id) }}" class="cs-title-cell">
+                                        {{ inc.title }}
+                                    </a>
+                                    {% if inc.investigation_status %}
+                                        <div class="small" style="color: var(--cs-text-tertiary);">
+                                            Phase: {{ inc.investigation_status }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="cs-badge cs-badge-neutral">{{ inc.attack_type }}</span>
+                                </td>
+                                <td>
+                                    {% if inc.severity == 'CRITICAL' %}
+                                        <span class="cs-badge cs-badge-critical"><span class="cs-badge-dot"></span> CRITICAL</span>
+                                    {% elif inc.severity == 'HIGH' %}
+                                        <span class="cs-badge cs-badge-high"><span class="cs-badge-dot"></span> HIGH</span>
+                                    {% elif inc.severity == 'MEDIUM' %}
+                                        <span class="cs-badge cs-badge-medium"><span class="cs-badge-dot"></span> MEDIUM</span>
+                                    {% else %}
+                                        <span class="cs-badge cs-badge-low"><span class="cs-badge-dot"></span> LOW</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="cs-badge cs-badge-{{ inc.status|lower }}">
+                                        <span class="cs-badge-dot"></span> {{ inc.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if inc.assigned_analyst %}
+                                        <span style="color: var(--cs-text-primary); font-weight: 500;">{{ inc.assigned_analyst }}</span>
+                                    {% elif current_user.role in ['ADMIN', 'ANALYST'] %}
+                                        <a href="{{ url_for('incident_detail', incident_id=inc.incident_id) }}#assignment-card" class="small fw-semibold" style="color: var(--cs-accent);">
+                                            + Assign
+                                        </a>
+                                    {% else %}
+                                        <span class="small" style="color: var(--cs-text-quaternary);">Unassigned</span>
+                                    {% endif %}
+                                </td>
+                                <td class="cs-mono small" style="white-space: nowrap;">
+                                    {{ inc.detected_at.strftime('%d %b %Y, %H:%M') if inc.detected_at else '—' }}
+                                </td>
+                                <td>
+                                    {% if current_user.role in ['ADMIN', 'ANALYST'] %}
+                                        {% set next_statuses = status_transitions.get(inc.status, []) %}
+                                        {% if next_statuses %}
+                                            <form method="POST" action="{{ url_for('update_incident_status', incident_id=inc.incident_id) }}" class="d-flex align-items-center gap-1">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="q" value="{{ filters.q }}">
+                                                <input type="hidden" name="severity_filter" value="{{ filters.severity_filter }}">
+                                                <input type="hidden" name="status_filter" value="{{ filters.status_filter }}">
+                                                <input type="hidden" name="attack_type_filter" value="{{ filters.attack_type_filter }}">
+                                                
+                                                <select name="status" class="cs-select py-1 px-2" style="font-size: 0.78rem; width: auto;" required>
+                                                    {% for next_st in next_statuses %}
+                                                        <option value="{{ next_st }}">{{ next_st }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <button type="submit" class="cs-btn-secondary cs-btn-sm py-1 px-2" style="font-size: 0.78rem;">
+                                                    Save
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="small" style="color: var(--cs-text-quaternary);">Closed</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="small" style="color: var(--cs-text-secondary); font-weight: 500;">{{ inc.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('incident_detail', incident_id=inc.incident_id) }}" class="cs-link-arrow small">
+                                        Details &rarr;
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9">
+                                    <div class="cs-empty">
+                                        <div class="cs-empty-icon">&empty;</div>
+                                        <h4 class="cs-empty-title">No Matching Incidents Found</h4>
+                                        <p class="cs-empty-subtitle">Try refining your search terms or filter parameters.</p>
+                                        <div class="mt-3">
+                                            <a href="{{ url_for('dashboard') }}" class="cs-btn-secondary cs-btn-sm">
+                                                Reset Filters
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Real MySQL Data serialized from Flask backend
+    const severityLabels = {{ analytics.severity_labels | tojson }};
+    const severityValues = {{ analytics.severity_values | tojson }};
+
+    const statusLabels = {{ analytics.status_labels | tojson }};
+    const statusValues = {{ analytics.status_values | tojson }};
+
+    const attackTypeLabels = {{ analytics.attack_type_labels | tojson }};
+    const attackTypeValues = {{ analytics.attack_type_values | tojson }};
+
+    const analystLabels = {{ analytics.analyst_labels | tojson }};
+    const analystInProgress = {{ analytics.analyst_in_progress | tojson }};
+    const analystCompleted = {{ analytics.analyst_completed | tojson }};
+
+    // Typography & Theme Global Defaults
+    Chart.defaults.color = "#64748B";
+    Chart.defaults.font.family = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    Chart.defaults.font.size = 11;
+
+    const commonTooltip = {
+        backgroundColor: "#0F172A",
+        titleColor: "#FFFFFF",
+        bodyColor: "#CBD5E1",
+        borderColor: "#334155",
+        borderWidth: 1,
+        padding: 10,
+        boxPadding: 4,
+        cornerRadius: 6,
+        usePointStyle: true
+    };
+
+    const commonLegend = {
+        position: 'bottom',
+        labels: {
+            color: "#475569",
+            boxWidth: 8,
+            boxHeight: 8,
+            usePointStyle: true,
+            padding: 14,
+            font: { size: 11, weight: '500' }
+        }
+    };
+
+    // 1. Severity Doughnut
+    new Chart(document.getElementById("severityChart"), {
+        type: "doughnut",
+        data: {
+            labels: severityLabels,
+            datasets: [{
+                data: severityValues,
+                backgroundColor: ["#DC2626", "#D97706", "#4F46E5", "#059669"],
+                borderColor: "#FFFFFF",
+                borderWidth: 3,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "72%",
+            plugins: {
+                legend: commonLegend,
+                tooltip: commonTooltip
+            }
+        }
+    });
+
+    // 2. Lifecycle Status Doughnut
+    new Chart(document.getElementById("statusChart"), {
+        type: "doughnut",
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: ["#DC2626", "#2563EB", "#D97706", "#059669", "#64748B"],
+                borderColor: "#FFFFFF",
+                borderWidth: 3,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "72%",
+            plugins: {
+                legend: commonLegend,
+                tooltip: commonTooltip
+            }
+        }
+    });
+
+    // 3. Attack Vectors Horizontal Bar
+    new Chart(document.getElementById("attackTypeChart"), {
+        type: "bar",
+        data: {
+            labels: attackTypeLabels,
+            datasets: [{
+                label: "Incidents",
+                data: attackTypeValues,
+                backgroundColor: "rgba(37, 99, 235, 0.8)",
+                hoverBackgroundColor: "#2563EB",
+                borderRadius: 4,
+                maxBarThickness: 16
+            }]
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: commonTooltip
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { precision: 0, color: "#64748B" },
+                    grid: { color: "#F1F5F9" }
+                },
+                y: {
+                    ticks: { color: "#334155", font: { size: 11, weight: '500' } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // 4. Analyst Workload Stacked Bar
+    new Chart(document.getElementById("analystWorkloadChart"), {
+        type: "bar",
+        data: {
+            labels: analystLabels,
+            datasets: [
+                {
+                    label: "In Progress",
+                    data: analystInProgress,
+                    backgroundColor: "#2563EB",
+                    borderRadius: 4,
+                    maxBarThickness: 16
+                },
+                {
+                    label: "Completed",
+                    data: analystCompleted,
+                    backgroundColor: "#059669",
+                    borderRadius: 4,
+                    maxBarThickness: 16
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true,
+                    ticks: { color: "#334155", font: { size: 11, weight: '500' } },
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: { precision: 0, color: "#64748B" },
+                    grid: { color: "#F1F5F9" }
+                }
+            },
+            plugins: {
+                legend: commonLegend,
+                tooltip: commonTooltip
+            }
+        }
+    });
+</script>
+{% endblock %}
