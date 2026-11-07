@@ -1,0 +1,8 @@
+Flask
+Flask-Login
+Flask-WTF
+Flask-Limiter
+mysql-connector-python
+python-dotenv
+Werkzeug
+gunicorn
