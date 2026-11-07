@@ -27,6 +27,7 @@ from flask import (
     flash,
     session,
     abort,
+    jsonify,
 )
 
 # Load environment configuration
@@ -425,6 +426,19 @@ def get_analytics_data() -> Dict[str, Any]:
         }
     finally:
         connection.close()
+
+
+# -----------------------------------------------------------------------------
+# Liveness & Health Check Endpoint (Render / Load Balancers)
+# -----------------------------------------------------------------------------
+
+@app.route("/health", methods=["GET"])
+def health():
+    """Production-safe liveness health-check endpoint for Render.
+
+    Returns HTTP 200 without requiring database connectivity or authentication.
+    """
+    return jsonify({"status": "healthy", "service": "CyberShield"}), 200
 
 
 # -----------------------------------------------------------------------------

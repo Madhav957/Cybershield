@@ -748,5 +748,34 @@ class CyberShieldTestCase(unittest.TestCase):
             self.assertEqual(sess.get("role"), "ANALYST")
 
 
+class HealthCheckTestCase(unittest.TestCase):
+    """Verify production-safe health-check endpoint for Render."""
+
+    def setUp(self):
+        self.app = app
+        self.app.config["TESTING"] = True
+        self.client = self.app.test_client()
+
+    def test_health_check_endpoint(self):
+        """GET /health must return 200 OK and expected JSON without authentication or DB."""
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content_type, "application/json")
+        data = response.get_json()
+        self.assertEqual(data, {"status": "healthy", "service": "CyberShield"})
+
+    def test_health_check_unauthenticated(self):
+        """GET /health must be accessible without login and not redirect to /login."""
+        response = self.client.get("/health", follow_redirects=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Location", response.headers)
+
+    def test_health_check_no_sensitive_leak(self):
+        """GET /health response must not expose credentials, env vars, or internal details."""
+        response = self.client.get("/health")
+        data = response.get_json()
+        self.assertEqual(set(data.keys()), {"status", "service"})
+
+
 if __name__ == "__main__":
     unittest.main()
